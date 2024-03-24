@@ -1,0 +1,31 @@
+# permissions for end users to edit dbconfigs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: dbconfig-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: store-operator
+    app.kubernetes.io/part-of: store-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: dbconfig-editor-role
+rules:
+- apiGroups:
+  - apps.setcreed.github.io
+  resources:
+  - dbconfigs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.setcreed.github.io
+  resources:
+  - dbconfigs/status
+  verbs:
+  - get

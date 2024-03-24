@@ -1,0 +1,27 @@
+# permissions for end users to view dbconfigs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: dbconfig-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: store-operator
+    app.kubernetes.io/part-of: store-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: dbconfig-viewer-role
+rules:
+- apiGroups:
+  - apps.setcreed.github.io
+  resources:
+  - dbconfigs
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps.setcreed.github.io
+  resources:
+  - dbconfigs/status
+  verbs:
+  - get

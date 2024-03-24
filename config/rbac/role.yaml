@@ -1,0 +1,32 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+- apiGroups:
+  - apps.setcreed.github.io
+  resources:
+  - dbconfigs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.setcreed.github.io
+  resources:
+  - dbconfigs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - apps.setcreed.github.io
+  resources:
+  - dbconfigs/status
+  verbs:
+  - get
+  - patch
+  - update
