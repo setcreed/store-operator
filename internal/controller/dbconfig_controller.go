@@ -18,11 +18,11 @@ package controller
 
 import (
 	"context"
+	"setcreed.github.io/store/internal/builders"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	appsv1alpha1 "setcreed.github.io/store/api/v1alpha1"
 )
@@ -47,9 +47,19 @@ type DbConfigReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.0/pkg/reconcile
 func (r *DbConfigReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
-
-	// TODO(user): your logic here
+	config := &appsv1alpha1.DbConfig{}
+	err := r.Get(ctx, req.NamespacedName, config)
+	if err != nil {
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+	builder, err := builders.NewDeployBuilder(config, r.Client)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	err = builder.Build()
+	if err != nil {
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
 }

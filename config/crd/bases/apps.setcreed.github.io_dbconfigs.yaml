@@ -21,6 +21,10 @@ spec:
       jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    - description: The replicas of CR's status
+      jsonPath: .spec.status.replicas
+      name: replicas
+      type: string
     - description: The readiness of the CR
       jsonPath: .status.ready
       name: Ready
@@ -77,4 +81,9 @@ spec:
         type: object
     served: true
     storage: true
-    subresources: {}
+    subresources:
+      scale:
+        labelSelectorPath: .status.labelSelector
+        specReplicasPath: .spec.replicas
+        statusReplicasPath: .status.replicas
+      status: {}

@@ -47,8 +47,9 @@ type DbConfigStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-
+//+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.labelSelector
 //+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="The time when the resource was created"
+//+kubebuilder:printcolumn:name="replicas",type="string",JSONPath=".spec.status.replicas",description="The replicas of CR's status"
 //+kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.ready",description="The readiness of the CR"
 
 // +kubebuilder:resource:path=dbconfigs,scope=Namespaced,shortName=dc
