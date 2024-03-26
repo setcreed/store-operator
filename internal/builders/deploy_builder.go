@@ -3,9 +3,11 @@ package builders
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"text/template"
 
-	v1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/yaml"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -13,7 +15,7 @@ import (
 )
 
 type DeployBuilder struct {
-	deploy *v1.Deployment
+	deploy *appsv1.Deployment
 	config *v1alpha1.DbConfig
 
 	client.Client
@@ -26,7 +28,7 @@ func deployName(name string) string {
 
 // 构建deployment 构造器
 func NewDeployBuilder(config *v1alpha1.DbConfig, c client.Client) (*DeployBuilder, error) {
-	deployment := &v1.Deployment{}
+	deployment := &appsv1.Deployment{}
 	err := c.Get(context.Background(), client.ObjectKey{Namespace: config.Namespace, Name: deployName(config.Name)}, deployment)
 	if err != nil {
 		// 表示deployment不存在
@@ -56,11 +58,21 @@ func (db *DeployBuilder) apply() *DeployBuilder {
 	return db
 }
 
+func (db *DeployBuilder) setOwner() *DeployBuilder {
+	db.deploy.OwnerReferences = append(db.deploy.OwnerReferences, metav1.OwnerReference{
+		APIVersion: db.deploy.APIVersion,
+		Kind:       db.deploy.Kind,
+		Name:       db.deploy.Name,
+		UID:        db.deploy.UID,
+	})
+	return db
+}
+
 // 构建出deployment
 // 包含创建和更新
 func (db *DeployBuilder) Build() error {
 	if db.deploy.CreationTimestamp.IsZero() {
-		db.apply()
+		db.apply().setOwner()
 		err := db.Create(context.Background(), db.deploy)
 		if err != nil {
 			return err
@@ -70,6 +82,14 @@ func (db *DeployBuilder) Build() error {
 		patch := client.MergeFrom(db.deploy.DeepCopy())
 		db.apply()
 		err := db.Patch(context.Background(), db.deploy, patch)
+		if err != nil {
+			return err
+		}
+		// 获取当前deployment ready的副本数
+		replicas := db.deploy.Status.ReadyReplicas
+		db.config.Status.Ready = fmt.Sprintf("%d/%d", replicas, db.config.Spec.Replicas)
+		db.config.Status.Replicas = replicas
+		err = db.Status().Update(context.Background(), db.config)
 		if err != nil {
 			return err
 		}

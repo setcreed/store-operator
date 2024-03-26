@@ -17,18 +17,14 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - description: The time when the resource was created
-      jsonPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-    - description: The replicas of CR's status
-      jsonPath: .spec.status.replicas
-      name: replicas
-      type: string
     - description: The readiness of the CR
       jsonPath: .status.ready
       name: Ready
       type: string
+    - description: The time when the resource was created
+      jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
     name: v1alpha1
     schema:
       openAPIV3Schema:

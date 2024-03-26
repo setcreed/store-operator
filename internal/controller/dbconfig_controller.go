@@ -18,13 +18,24 @@ package controller
 
 import (
 	"context"
-	"setcreed.github.io/store/internal/builders"
 
+	appv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/util/workqueue"
+	"setcreed.github.io/store/internal/builders"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	appsv1alpha1 "setcreed.github.io/store/api/v1alpha1"
+)
+
+const (
+	Kind            = "DbConfig"
+	GroupAPIVersion = "apps.setcreed.github.io/v1alpha1"
 )
 
 // DbConfigReconciler reconciles a DbConfig object
@@ -64,9 +75,35 @@ func (r *DbConfigReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	return ctrl.Result{}, nil
 }
 
+func (r *DbConfigReconciler) OnDelete(ctx context.Context, event event.DeleteEvent, limitingInterface workqueue.RateLimitingInterface) {
+	for _, ref := range event.Object.GetOwnerReferences() {
+		if ref.Kind == Kind && ref.APIVersion == GroupAPIVersion {
+			limitingInterface.AddRateLimited(reconcile.Request{types.NamespacedName{
+				Namespace: event.Object.GetNamespace(),
+				Name:      ref.Name,
+			}})
+		}
+	}
+}
+
+func (r *DbConfigReconciler) OnUpdate(ctx context.Context, event event.UpdateEvent, limitingInterface workqueue.RateLimitingInterface) {
+	for _, ref := range event.ObjectNew.GetOwnerReferences() {
+		if ref.Kind == Kind && ref.APIVersion == GroupAPIVersion {
+			limitingInterface.AddRateLimited(reconcile.Request{types.NamespacedName{
+				Namespace: event.ObjectNew.GetNamespace(),
+				Name:      ref.Name,
+			}})
+		}
+	}
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *DbConfigReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&appsv1alpha1.DbConfig{}).
+		Watches(&appv1.Deployment{}, handler.Funcs{
+			DeleteFunc: r.OnDelete,
+			UpdateFunc: r.OnUpdate,
+		}).
 		Complete(r)
 }
