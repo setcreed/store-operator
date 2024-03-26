@@ -1,13 +1,8 @@
 apiVersion: apps.setcreed.github.io/v1alpha1
 kind: DbConfig
 metadata:
-  labels:
-    app.kubernetes.io/name: dbconfig
-    app.kubernetes.io/instance: dbconfig-sample
-    app.kubernetes.io/part-of: store-operator
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: store-operator
-  name: dbconfig-sample
+  name: mydb1
 spec:
   replicas: 1
-  dsn: "mysql dsn"
+  dsn: "root:123456@tcp(mysqltest:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
+  maxOpenConn: 20

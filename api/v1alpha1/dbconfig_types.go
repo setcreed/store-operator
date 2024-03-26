@@ -30,11 +30,22 @@ type DbConfigSpec struct {
 	// +optional
 	//+kubebuilder:default:=1
 	//+kubebuilder:validation:Minimum:=1
-	Replicas *int32 `json:"replicas,omitempty" protobuf:"varint,1,opt,name=replicas"`
+	Replicas int `json:"replicas,omitempty" protobuf:"varint,1,opt,name=replicas"`
 
 	// connect dsn
 	//+kubebuilder:validation:Required
 	Dsn string `json:"dsn,omitempty"`
+	//+kubebuilder:default:=15
+	//+kubebuilder:validation:Minimum:=1
+	//+kubebuilder:validation:Maximum:=2000
+	MaxOpenConn int `json:"maxOpenConn,omitempty"`
+	//+kubebuilder:default:=600
+	//+kubebuilder:validation:Minimum:=60
+	MaxLifeTime int `json:"maxLifeTime,omitempty"`
+	//+kubebuilder:default:=5
+	//+kubebuilder:validation:Minimum:=1
+	//+kubebuilder:validation:Maximum:=2000
+	MaxIdleConn int `json:"maxIdleConn,omitempty"`
 }
 
 // DbConfigStatus defines the observed state of DbConfig
@@ -49,6 +60,7 @@ type DbConfigStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.labelSelector
 //+kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.ready",description="The readiness of the CR"
+//+kubebuilder:printcolumn:name="最大连接数",type="integer",JSONPath=".spec.maxOpenConn",description="最大连接数"
 //+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="The time when the resource was created"
 
 // +kubebuilder:resource:path=dbconfigs,scope=Namespaced,shortName=dc

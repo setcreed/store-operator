@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqltest
+spec:
+  selector:
+    matchLabels:
+      app: mysqltest
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysqltest
+    spec:
+      containers:
+        - name: mysqltest
+          image: mysql:5.7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "123456"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysqltest
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mysqltest

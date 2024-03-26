@@ -1,6 +1,7 @@
 package builders
 
 import (
+	"context"
 	"fmt"
 	"setcreed.github.io/store/api/v1alpha1"
 	"testing"
@@ -14,6 +15,6 @@ func TestNewDeployBuilder(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	build := builder.Build()
+	build := builder.Build(context.Background())
 	t.Log(fmt.Sprintf("%+v", build))
 }

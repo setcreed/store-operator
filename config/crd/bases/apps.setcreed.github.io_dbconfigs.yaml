@@ -21,6 +21,10 @@ spec:
       jsonPath: .status.ready
       name: Ready
       type: string
+    - description: 最大连接数
+      jsonPath: .spec.maxOpenConn
+      name: 最大连接数
+      type: integer
     - description: The time when the resource was created
       jsonPath: .metadata.creationTimestamp
       name: Age
@@ -53,12 +57,25 @@ spec:
               dsn:
                 description: connect dsn
                 type: string
+              maxIdleConn:
+                default: 5
+                maximum: 2000
+                minimum: 1
+                type: integer
+              maxLifeTime:
+                default: 600
+                minimum: 60
+                type: integer
+              maxOpenConn:
+                default: 15
+                maximum: 2000
+                minimum: 1
+                type: integer
               replicas:
                 default: 1
                 description: |-
                   Number of desired pods. This is a pointer to distinguish between explicit
                   zero and not specified. Defaults to 1.
-                format: int32
                 minimum: 1
                 type: integer
             type: object

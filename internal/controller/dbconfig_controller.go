@@ -18,7 +18,6 @@ package controller
 
 import (
 	"context"
-
 	appv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -67,7 +66,7 @@ func (r *DbConfigReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	if err != nil {
 		return ctrl.Result{}, err
 	}
-	err = builder.Build()
+	err = builder.Build(ctx)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
