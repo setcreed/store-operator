@@ -18,11 +18,14 @@ package controller
 
 import (
 	"context"
+
+	"github.com/prometheus/client_golang/prometheus"
 	appv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
-	"setcreed.github.io/store/internal/builders"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -30,6 +33,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	appsv1alpha1 "setcreed.github.io/store/api/v1alpha1"
+	"setcreed.github.io/store/internal/builders"
+	mymetrics "setcreed.github.io/store/internal/metrics"
 )
 
 const (
@@ -41,6 +46,7 @@ const (
 type DbConfigReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+	E      record.EventRecorder
 }
 
 //+kubebuilder:rbac:groups=apps.setcreed.github.io,resources=dbconfigs,verbs=get;list;watch;create;update;patch;delete
@@ -57,6 +63,11 @@ type DbConfigReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.17.0/pkg/reconcile
 func (r *DbConfigReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+
+	mymetrics.StoreReconcileTotal.With(prometheus.Labels{
+		"controller": "dbconfig",
+	}).Inc()
+
 	config := &appsv1alpha1.DbConfig{}
 	err := r.Get(ctx, req.NamespacedName, config)
 	if err != nil {
@@ -66,11 +77,13 @@ func (r *DbConfigReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	if err != nil {
 		return ctrl.Result{}, err
 	}
+	r.E.Event(config, corev1.EventTypeNormal, "初始化deployment", "成功")
 	err = builder.Build(ctx)
 	if err != nil {
+		r.E.Event(config, corev1.EventTypeWarning, "创建deployment", err.Error())
 		return ctrl.Result{}, err
 	}
-
+	r.E.Event(config, corev1.EventTypeNormal, "创建deployment", "成功")
 	return ctrl.Result{}, nil
 }
 

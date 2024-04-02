@@ -28,9 +28,12 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
+	"setcreed.github.io/store/internal/dashboard"
+	mymetrics "setcreed.github.io/store/internal/metrics"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	"sigs.k8s.io/controller-runtime/pkg/metrics"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
@@ -122,9 +125,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	metrics.Registry.MustRegister(mymetrics.StoreReconcileTotal)
+
 	if err = (&controller.DbConfigReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		E:      mgr.GetEventRecorderFor("dbconfig"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "DbConfig")
 		os.Exit(1)
@@ -141,8 +147,13 @@ func main() {
 	}
 
 	setupLog.Info("starting manager")
+	if err := mgr.Add(dashboard.NewAdminUI(mgr.GetClient())); err != nil {
+		setupLog.Error(err, "unable to create dashboard")
+		os.Exit(1)
+	}
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+
 }

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="0" http-equiv="Expires"/>
+    <meta content="no-cache" http-equiv="Pragma"/>
+    <meta content="no-cache" http-equiv="Cache-control"/>
+    <meta content="no-cache" http-equiv="Cache"/>
+    <script src="js/vue.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/vueloader.js"></script>
+    <script src="js/axios.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.64.0/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.64.0/mode/clike/clike.min.js" integrity="sha512-GAled7oA9WlRkBaUQlUEgxm37hf43V2KEMaEiWlvBO/ueP2BLvBLKN5tIJu4VZOTwo6Z4XvrojYngoN9dJw2ug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.64.0/mode/yaml/yaml.min.js" integrity="sha512-+aXDZ93WyextRiAZpsRuJyiAZ38ztttUyO/H3FZx4gOAOv4/k9C6Um1CvHVtaowHZ2h7kH0d+orWvdBLPVwb4g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.64.0/theme/monokai.min.css" integrity="sha512-R6PH4vSzF2Yxjdvb2p2FA06yWul+U0PDDav4b/od/oXf9Iw37zl10plvwOXelrjV2Ai7Eo3vyHeyFUjhXdBCVQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.64.0/codemirror.min.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="js/element.js"></script>
+</head>
+<body>
+<div id="app">
+    <div style="font-size: 22px;text-align:center">
+        <p>store-core Operator Dashboard</p>
+    </div>
+    <div style="text-align: center;height: 30px;background: #eeeded;padding-top: 10px;">
+        <el-breadcrumb separator="/">
+            <router-link :to="{ path: '/' }">服务列表</router-link> /
+            <router-link :to="{ path: '/add' }">新增配置</router-link>
+        </el-breadcrumb>
+    </div>
+    <router-view></router-view>
+</div>
+<script type="module">
+    import router from "./js/myroute.js?v=1"
+    new Vue({
+        el: '#app',
+        router
+    })
+</script>
+</body>
+</html>
