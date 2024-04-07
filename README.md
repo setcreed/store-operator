@@ -44,3 +44,8 @@ kubectl apply -f config/samples/apps_v1alpha1_dbconfig.yaml
 
 # 使用store-core-sdk 操作db
 https://github.com/setcreed/store-core-sdk/blob/master/examples/query.go
+
+
+# store-operator dashboard
+监听在9003端口上
+![](docs/images/dashboard.png)
