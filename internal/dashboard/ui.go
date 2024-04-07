@@ -2,6 +2,8 @@ package dashboard
 
 import (
 	"context"
+	"embed"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 
@@ -16,6 +18,9 @@ import (
 	"setcreed.github.io/store/api/v1alpha1"
 )
 
+//go:embed adminui
+var adminUI embed.FS
+
 type AdminUI struct {
 	r      *gin.Engine
 	client client.Client
@@ -23,7 +28,11 @@ type AdminUI struct {
 
 func NewAdminUI(c client.Client) *AdminUI {
 	r := gin.New()
-	r.StaticFS("/adminui", http.Dir("./adminui"))
+	adminUIFS, err := fs.Sub(adminUI, "adminui")
+	if err != nil {
+		panic(err)
+	}
+	r.StaticFS("/adminui", http.FS(adminUIFS))
 	r.Use(errorHandler())
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "ok"})

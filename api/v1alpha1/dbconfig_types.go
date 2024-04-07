@@ -25,6 +25,13 @@ import (
 
 // DbConfigSpec defines the desired state of DbConfig
 type DbConfigSpec struct {
+	DbConfig DBConfig `json:"dbConfig,omitempty"`
+
+	// +optional
+	SqlConfig []*SQLConfig `json:"sqlConfig,omitempty"`
+}
+
+type DBConfig struct {
 	// Number of desired pods. This is a pointer to distinguish between explicit
 	// zero and not specified. Defaults to 1.
 	// +optional
@@ -48,6 +55,16 @@ type DbConfigSpec struct {
 	MaxIdleConn int `json:"maxIdleConn,omitempty"`
 }
 
+type SQLConfig struct {
+	Name   string  `json:"name,omitempty"`
+	Sql    string  `json:"sql,omitempty"`
+	Select *Select `json:"select,omitempty"`
+}
+
+type Select struct {
+	Sql string `json:"sql,omitempty"`
+}
+
 // DbConfigStatus defines the observed state of DbConfig
 type DbConfigStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
@@ -60,7 +77,7 @@ type DbConfigStatus struct {
 //+kubebuilder:subresource:status
 //+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.labelSelector
 //+kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.ready",description="The readiness of the CR"
-//+kubebuilder:printcolumn:name="最大连接数",type="integer",JSONPath=".spec.maxOpenConn",description="最大连接数"
+//+kubebuilder:printcolumn:name="最大连接数",type="integer",JSONPath=".spec.dbConfig.maxOpenConn",description="最大连接数"
 //+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp",description="The time when the resource was created"
 
 // +kubebuilder:resource:path=dbconfigs,scope=Namespaced,shortName=dc

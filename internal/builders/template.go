@@ -50,11 +50,17 @@ const cmTemplate = `
       rpcPort: 8080
       httpPort: 8090
   dbConfig:
-    dsn: "[[ .Dsn ]]"
-    maxOpenConn: [[ .MaxOpenConn ]]
-    maxLifeTime: [[ .MaxLifeTime ]]
-    maxIdleConn: [[ .MaxIdleConn ]]
+    dsn: "[[ .DbConfig.Dsn ]]"
+    maxOpenConn: [[ .DbConfig.MaxOpenConn ]]
+    maxLifeTime: [[ .DbConfig.MaxLifeTime ]]
+    maxIdleConn: [[ .DbConfig.MaxIdleConn ]]
   sqlConfig:
-  - name: test
-    sql: "select * from test"
+  [[ range .SqlConfig ]]
+  - name: [[ .Name ]]
+    sql: "[[ .Sql ]]"
+    [[ if .Select ]]
+    select:
+      sql: "[[ .Select.Sql ]]"
+    [[ end ]]
+  [[ end ]]
 `

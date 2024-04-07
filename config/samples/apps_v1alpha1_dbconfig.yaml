@@ -3,6 +3,14 @@ kind: DbConfig
 metadata:
   name: mydb1
 spec:
-  replicas: 1
-  dsn: "root:123456@tcp(mysqltest:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
-  maxOpenConn: 20
+  dbConfig:
+    replicas: 1
+    dsn: "root:123456@tcp(mysqltest:3306)/test?charset=utf8mb4&parseTime=True&loc=Local"
+    maxOpenConn: 20
+  sqlConfig:
+    - name: userList
+      sql: "select * from users where user_id>@id"
+    - name: addUser
+      sql: "insert into users(user_name, user_password) values(@user_name, @user_password)"
+      select:
+        sql: "SELECT LAST_INSERT_ID() as user_id"

@@ -4,29 +4,85 @@ kind: ClusterRole
 metadata:
   name: manager-role
 rules:
-- apiGroups:
-  - apps.setcreed.github.io
-  resources:
-  - dbconfigs
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - apps.setcreed.github.io
-  resources:
-  - dbconfigs/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - apps.setcreed.github.io
-  resources:
-  - dbconfigs/status
-  verbs:
-  - get
-  - patch
-  - update
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps
+    resources:
+      - deployments/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - apps.setcreed.github.io
+    resources:
+      - dbconfigs
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - apps.setcreed.github.io
+    resources:
+      - dbconfigs/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - apps.setcreed.github.io
+    resources:
+      - dbconfigs/status
+    verbs:
+      - get
+      - patch
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
