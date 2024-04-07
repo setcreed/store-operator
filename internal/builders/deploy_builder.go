@@ -73,7 +73,7 @@ func (db *DeployBuilder) setCMAnnotation(configStr string) {
 // 同步属性
 func (db *DeployBuilder) apply() *DeployBuilder {
 	// 同步副本
-	*db.deploy.Spec.Replicas = int32(db.config.Spec.Replicas)
+	*db.deploy.Spec.Replicas = int32(db.config.Spec.DbConfig.Replicas)
 	return db
 }
 
@@ -120,7 +120,7 @@ func (db *DeployBuilder) Build(ctx context.Context) error {
 
 		// 获取当前deployment ready的副本数
 		replicas := db.deploy.Status.ReadyReplicas
-		db.config.Status.Ready = fmt.Sprintf("%d/%d", replicas, db.config.Spec.Replicas)
+		db.config.Status.Ready = fmt.Sprintf("%d/%d", replicas, db.config.Spec.DbConfig.Replicas)
 		db.config.Status.Replicas = replicas
 		// 设置状态
 		err = db.Client.Status().Update(ctx, db.config)
