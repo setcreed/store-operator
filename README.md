@@ -10,6 +10,12 @@ kubebuilder init --domain setcreed.github.io --repo setcreed.github.io/store
 kubebuilder create api --group apps --version v1alpha1 --kind DbConfig
 ```
 
+创建webhook
+```
+kubebuilder create webhook --group apps --version v1alpha1 --kind DbConfig --programmatic-validation --defaulting
+```
+通过设置--defaulting可创建mutatingadmissionwebhook类型准入控制器，用来修改传入资源；参数--programmatic-validation可创建validatingadmissionwebhook，用来验证传入资源
+
 
 # 构建 部署
 
@@ -23,11 +29,15 @@ build image
 make docker-build
 ```
 
-deploy operator in kubernetes clsuter
+deploy operator in kubernetes cluster
 ```bash
 make deploy
 ```
 
+如果添加webhook，需要先部署cert-manager
+```bash
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.14.4/cert-manager.yaml
+```
 
 # 测试
 
