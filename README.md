@@ -10,7 +10,6 @@ kubebuilder init --domain setcreed.github.io --repo setcreed.github.io/store
 kubebuilder create api --group apps --version v1alpha1 --kind DbConfig
 ```
 
-
 # 构建 部署
 
 build binary
@@ -44,3 +43,4 @@ kubectl apply -f config/samples/apps_v1alpha1_dbconfig.yaml
 
 # 使用store-core-sdk 操作db
 https://github.com/setcreed/store-core-sdk/blob/master/examples/query.go
+
