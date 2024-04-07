@@ -28,14 +28,15 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
-	"setcreed.github.io/store/internal/dashboard"
-	mymetrics "setcreed.github.io/store/internal/metrics"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+
+	"setcreed.github.io/store/internal/dashboard"
+	mymetrics "setcreed.github.io/store/internal/metrics"
 
 	appsv1alpha1 "setcreed.github.io/store/api/v1alpha1"
 	"setcreed.github.io/store/internal/controller"
@@ -134,6 +135,12 @@ func main() {
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "DbConfig")
 		os.Exit(1)
+	}
+	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
+		if err = (&appsv1alpha1.DbConfig{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to create webhook", "webhook", "DbConfig")
+			os.Exit(1)
+		}
 	}
 	//+kubebuilder:scaffold:builder
 
