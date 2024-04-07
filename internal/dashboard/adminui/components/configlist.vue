@@ -17,12 +17,12 @@
                 </el-table-column>
               <el-table-column label="副本数" width="150">
                 <template slot-scope="scope">
-                  <p>  {{ scope.row.spec.replicas }}  </p>
+                  <p>  {{ scope.row.spec.dbConfig.replicas }}  </p>
                 </template>
               </el-table-column>
               <el-table-column label="DSN" width="150">
                 <template slot-scope="scope">
-                  <p>  {{ scope.row.spec.dsn }}  </p>
+                  <p>  {{ scope.row.spec.dbConfig.dsn }}  </p>
                 </template>
               </el-table-column>
               <el-table-column label="状态" width="150">
